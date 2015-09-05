@@ -1,0 +1,10 @@
+{
+  "name": "FactorioMaps",
+  "version": "0.5.4",
+  "title": "Google Maps Factorio style",
+  "author": "jeroon",
+  "contact": "http://www.factorioforums.com/forum/memberlist.php?mode=viewprofile&u=976",
+  "homepage": "http://www.factorio.com",
+  "description": "Create a Google Maps-like map of your Factorio game",
+  "dependencies": ["base >= 0.12.0"]
+}
