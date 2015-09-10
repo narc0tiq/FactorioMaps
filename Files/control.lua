@@ -1,5 +1,3 @@
-
-
 game.on_init(function()
 	firstruntimer = 120
 	firstrun = true
@@ -35,10 +33,10 @@ game.on_event(defines.events.on_tick, function(event)
 	end
 	
 	-- UPDATE PLAYER POSITION
-	if(counter>=30 and game.players[1].gui.top.factoriomaps ~= nil) then
-		if(game.players[1].gui.top.factoriomaps.menu_ver2 ~= nil) then
+	if(counter>=30 and game.players[1].gui.left.factoriomaps ~= nil) then
+		if(game.players[1].gui.left.factoriomaps.menu_ver2 ~= nil) then
 			local pos = game.players[1].position
-			game.players[1].gui.top.factoriomaps.menu_ver2.menuplayerxy.playerxy.caption = math.ceil(pos.x) .. "," .. math.ceil(pos.y)
+			game.players[1].gui.left.factoriomaps.menu_ver2.menuplayerxy.playerxy.caption = math.ceil(pos.x) .. "," .. math.ceil(pos.y)
 			
 		end
 		counter = 0
@@ -52,14 +50,14 @@ game.on_event(defines.events.on_gui_click, function(event)
 
 	-- BUTTON SHOW MENU
 	if(event.element.name=="showmenu") then
-		if(game.players[1].gui.top.showmenu.caption=="Show Menu") then 
-			drawgui()
-			setvalues()
-			game.players[1].gui.top.showmenu.caption="Hide Menu"
+		if(game.players[event.player_index].gui.top.showmenu.caption=="Show Menu") then 
+			drawgui(event.player_index)
+			setvalues(event.player_index)
+			game.players[event.player_index].gui.top.showmenu.caption="Hide Menu"
 		else
-			savevalues()
-			game.players[1].gui.top.factoriomaps.destroy()
-			game.players[1].gui.top.showmenu.caption="Show Menu"		
+			savevalues(event.player_index)
+			game.players[event.player_index].gui.left.factoriomaps.destroy()
+			game.players[event.player_index].gui.top.showmenu.caption="Show Menu"		
 		end
 	end
 	
@@ -79,7 +77,7 @@ game.on_event(defines.events.on_gui_click, function(event)
 	if(event.element.name == "advancedbutton") then
 		if (advanced == true) then 
 			advanced = false
-			game.players[1].gui.top.factoriomaps.menu_ver2.destroy()
+			game.players[event.player_index].gui.left.factoriomaps.menu_ver2.destroy()
 		else
 			advanced = true
 		end
@@ -98,27 +96,27 @@ game.on_event(defines.events.on_gui_click, function(event)
 	
 	-- tp BUTTON TELEPORT
 	if(event.element.name=="teleport1") then
-		local x = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextX.text
-		local y = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextY.text
+		local x = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextX.text
+		local y = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextY.text
 		if(x~="" and y ~= "") then 
-			game.players[1].teleport{x,y}
+			game.players[event.player_index].teleport{x,y}
 		end
 	end
 	if(event.element.name=="teleport2") then
-		local x = game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextX.text
-		local y = game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextY.text
+		local x = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextX.text
+		local y = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextY.text
 		if(x~="" and y ~= "") then
-			game.players[1].teleport{x,y}
+			game.players[event.player_index].teleport{x,y}
 		end
 	end
 	-- pp BUTTON: USE PLAYER COORDINATES IN TEXTFIELD
 	if(event.element.name=="useplayerposition1") then
-		txtTopLeftX.text = math.ceil(game.players[1].position.x)
-		txtTopLeftY.text = math.ceil(game.players[1].position.y)
+		txtTopLeftX.text = math.ceil(game.players[event.player_index].position.x)
+		txtTopLeftY.text = math.ceil(game.players[event.player_index].position.y)
 	end
 	if(event.element.name=="useplayerposition2") then
-		txtBottomRightX.text = math.ceil(game.players[1].position.x)
-		txtBottomRightY.text = math.ceil(game.players[1].position.y)
+		txtBottomRightX.text = math.ceil(game.players[event.player_index].position.x)
+		txtBottomRightY.text = math.ceil(game.players[event.player_index].position.y)
 	end
 
 	-- SHOW ALT INFO BUTTON
@@ -132,8 +130,8 @@ game.on_event(defines.events.on_gui_click, function(event)
 		local maxx = -100000
 		local maxy = -100000
 		
-		for coord in game.players[1].surface.get_chunks() do
-			if(game.players[1].force.is_chunk_charted(game.players[1].surface,{coord.x,coord.y})) then -- if explored by player
+		for coord in game.players[event.player_index].surface.get_chunks() do
+			if(game.players[event.player_index].force.is_chunk_charted(game.players[event.player_index].surface,{coord.x,coord.y})) then -- if explored by player
 				if(coord.x<minx) then	-- check if this chunk is outside the current outer limit
 					minx = coord.x
 				end
@@ -161,7 +159,7 @@ game.on_event(defines.events.on_gui_click, function(event)
 	
 	-- CROP BASE BUTTON
 	if(event.element.name == "cropbase") then
-		cropbase()
+		cropbase(event.player_index)
 	end
 	
 	-- EXTRA ZOOM BUTTONS
@@ -241,35 +239,35 @@ game.on_event(defines.events.on_gui_click, function(event)
 	if(event.element.name == "generate") then
 		
 		if(txtTopLeftX.text == "" or txtBottomRightX.text == "") then
-			cropbase()
+			cropbase(event.player_index)
 		end
-		if(txtTopLeftX.text ~= "" and txtBottomRightX.text ~= "" and checkinput()) then
-			--local minX = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextX.text
-			--local minY = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextY.text
-			local deltaX = math.abs(game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextX.text) + math.abs(game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextX.text)
-			local deltaY = math.abs(game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextY.text) + math.abs(game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextY.text)
-			generatescreenshots(deltaX, deltaY)
-			game.players[1].gui.top.factoriomaps.menu_ver1.generatewarning.caption = "Screenshots created"
+		if(txtTopLeftX.text ~= "" and txtBottomRightX.text ~= "" and checkinput(event.player_index)) then
+			--local minX = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextX.text
+			--local minY = game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextY.text
+			local deltaX = math.abs(game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextX.text) + math.abs(game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextX.text)
+			local deltaY = math.abs(game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextY.text) + math.abs(game.players[event.player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextY.text)
+			generatescreenshots(event.player_index, deltaX, deltaY)
+			game.players[event.player_index].gui.left.factoriomaps.menu_ver1.generatewarning.caption = "Screenshots created"
 			generateindex()
-			game.players[1].gui.top.factoriomaps.menu_ver1.generatewarning2.caption = "Index.html created. Check your script-output folder to see the result!"
+			game.players[event.player_index].gui.left.factoriomaps.menu_ver1.generatewarning2.caption = "Index.html created. Check your script-output folder to see the result!"
 		end
 	end
 	
 	if(draw == true) then
-		drawgui()
+		drawgui(event.player_index)
 		draw = false
 	end
 end)
 
-function cropbase()
+function cropbase(player_index)
 	-- code copied from Max size, to shrink the initial area quite a bit, before searching for max builded area
 	local minx = 10000
 	local miny = 10000
 	local maxx = -10000
 	local maxy = -10000
 	
-	for coord in game.players[1].surface.get_chunks() do -- first find max explored area, to shrink the area to search for player-built items a bit
-		if(game.forces.player.is_chunk_charted(game.players[1].surface,{coord.x,coord.y})) then -- if explored by player
+	for coord in game.players[player_index].surface.get_chunks() do -- first find max explored area, to shrink the area to search for player-built items a bit
+		if(game.forces.player.is_chunk_charted(game.players[player_index].surface,{coord.x,coord.y})) then -- if explored by player
 	
 			if(coord.x<minx) then	-- check if outside current outer limit
 				minx = coord.x
@@ -301,12 +299,12 @@ function cropbase()
 	
 	for y=limitminy,limitmaxy,step do
 		for x =limitminx,limitmaxx,step do
---			for _,b in pairs(game.players[1].surface.find_entities_filtered{area = {{x-step/2, y-step/2}, {x+step/2, y+step/2}}, name="train-stop"}) do
---					game.players[1].print(b.prototype.name)
+--			for _,b in pairs(game.players[player_index].surface.find_entities_filtered{area = {{x-step/2, y-step/2}, {x+step/2, y+step/2}}, name="train-stop"}) do
+--					game.players[player_index].print(b.prototype.name)
 --			end
 
 								
-			for _,v in pairs(game.players[1].surface.find_entities{{x-step/2, y-step/2}, {x+step/2, y+step/2}}) do 
+			for _,v in pairs(game.players[player_index].surface.find_entities{{x-step/2, y-step/2}, {x+step/2, y+step/2}}) do 
 				
 				if(v.force.name == "player" and v.name ~= "player") then -- if owner = player, and it's not the player himself
 
@@ -339,7 +337,7 @@ function cropbase()
 		foldernamesize = "Map" .. "(".. math.ceil(-1*minx/32 + maxx/32) .. "," .. math.ceil(-1*miny/32 + maxy/32) .. ")"
 		updatefilename()
 	else
-		game.players[1].print("Either you haven't built anything yet, or there is something very wrong ;)")
+		game.players[player_index].print("Either you haven't built anything yet, or there is something very wrong ;)")
 	end
 end
 
@@ -348,13 +346,13 @@ function updatefilename()
 	txtFolderName.text = foldernamesize .. foldernameresolution -- change folder name
 end
 
-function checkinput()
+function checkinput(player_index)
 	-- check if coordinates entered make a valid rectangle
 	
 	if( tonumber(txtTopLeftX.text) < tonumber(txtBottomRightX.text) and tonumber(txtTopLeftY.text) < tonumber(txtBottomRightY.text))then
 		return true
 	else
-		game.players[1].print("Coordinates input error, top right has to be smaller than bottom left")
+		game.players[player_index].print("Coordinates input error, top right has to be smaller than bottom left")
 		return false
 	end
 	
@@ -362,34 +360,36 @@ end
 
 function drawshowmenubutton()
 	-- draw initial menu button
-	if(game.players[1].gui.top.showmenu == nil) then
-		game.players[1].gui.top.add({type="button", name="showmenu", caption="Show Menu"})
+	for k,_ in ipairs(game.players) do
+		if(game.players[k].gui.top.showmenu == nil) then
+			game.players[k].gui.top.add({type="button", name="showmenu", caption="Show Menu"})
+		end
 	end
 	
 	
 end
 
-function setvalues()
+function setvalues(player_index)
 	-- save values on hide menu
 	if(ui.menu_ver2) then
-		game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextX.text = tf1
-		game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextY.text = tf2
-		game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextX.text = tf3
-		game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextY.text = tf4
-		game.players[1].gui.top.factoriomaps.menu_ver1.menu4.foldername.text = tf5
+		game.players[player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextX.text = tf1
+		game.players[player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextY.text = tf2
+		game.players[player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextX.text = tf3
+		game.players[player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextY.text = tf4
+		game.players[player_index].gui.left.factoriomaps.menu_ver1.menu4.foldername.text = tf5
 	end
 end
 
-function savevalues()
+function savevalues(player_index)
 	-- load values on show menu
-	if(game.players[1].gui.top.factoriomaps) then
-		if(game.players[1].gui.top.factoriomaps.menu_ver2) then
-			tf1 = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextX.text
-			tf2 = game.players[1].gui.top.factoriomaps.menu_ver2.menu1.toplefttextY.text
-			tf3 = game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextX.text
-			tf4 = game.players[1].gui.top.factoriomaps.menu_ver2.menu2.bottomrighttextY.text
+	if(game.players[player_index].gui.left.factoriomaps) then
+		if(game.players[player_index].gui.left.factoriomaps.menu_ver2) then
+			tf1 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextX.text
+			tf2 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu1.toplefttextY.text
+			tf3 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextX.text
+			tf4 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu2.bottomrighttextY.text
 		end
-		tf5 = game.players[1].gui.top.factoriomaps.menu_ver1.menu4.foldername.text
+		tf5 = game.players[player_index].gui.left.factoriomaps.menu_ver1.menu4.foldername.text
 	end
 	
 end
@@ -402,7 +402,7 @@ function toLatLng(res, point)
 		end
 	else
 		local y = res - point.y
-		--game.players[1].print (res .. " ** " .. point.y..",".. y)
+		--game.players[player_index].print (res .. " ** " .. point.y..",".. y)
 		lat = -90 + (math.atan2(y,res)*180/math.pi) 
 		if(lat < -84.5) then
 			lat = -84.5
@@ -412,14 +412,14 @@ function toLatLng(res, point)
 	return {lat = lat, lng = lng}
 end
 
-function generatescreenshots()
+function generatescreenshots(player_index)
 
 	if(txtFolderName.text == "") then 
-		game.players[1].print("Please check foldername, it can't be empty")
+		game.players[player_index].print("Please check foldername, it can't be empty")
 		return
 	end
 	
-	playerposition = game.players[1].position
+	playerposition = game.players[player_index].position
 	ingameresolution = 0 -- default
 	
 	local squaresize = gridpixelarray[gridsizeindex]
@@ -501,15 +501,15 @@ function generatescreenshots()
 		
 		zooming = zooming/2
 		if gridsizeindex == 1 and zooming < 1/256 then
-			game.players[1].print("max level zoom break")
+			game.players[player_index].print("max level zoom break")
 			minzoom = z
 			break
 		elseif gridsizeindex == 2 and zooming < 1/64 then
-			game.players[1].print("max level zoom break")
+			game.players[player_index].print("max level zoom break")
 			minzoom = z
 			break
 		elseif gridsizeindex == 3 and zooming < 1/32 then
-			game.players[1].print("max level zoom break")
+			game.players[player_index].print("max level zoom break")
 			minzoom = z
 			break
 		end

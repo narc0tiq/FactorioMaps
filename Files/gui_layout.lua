@@ -3,21 +3,21 @@ require "gui_style"
 
 
 
-function drawgui()
+function drawgui(player_index)
 	
 	if(ui ~= nil) then
-		savevalues()
+		savevalues(player_index)
 	end
 	
 	
-	if(game.players[1].gui.top.factoriomaps ~= nil) then
-		game.players[1].gui.top.factoriomaps.destroy()
+	if(game.players[player_index].gui.left.factoriomaps ~= nil) then
+		game.players[player_index].gui.left.factoriomaps.destroy()
 	end
-		game.players[1].gui.top.add({type="frame", name="factoriomaps", caption="Factorio Maps", direction="horizontal"})
+		game.players[player_index].gui.left.add({type="frame", name="factoriomaps", caption="Factorio Maps", direction="horizontal"})
 		
 --help = true		
 advanced = true
-		ui = game.players[1].gui.top.factoriomaps
+		ui = game.players[player_index].gui.left.factoriomaps
 	
 		if (ui.menu_ver1 == nil) then
 			ui.add({type="frame", name="menu_ver1",direction="vertical"})
@@ -41,7 +41,7 @@ advanced = true
 			ui.menu_ver1.add({type="flow", name="menu3", direction = "horizontal"})
 			ui.menu_ver1.menu3.add({type="checkbox", name="maxzoomcheckbox1",state = false, caption = "Maximum zoom in"})
 			ui.menu_ver1.menu3.add({type="checkbox", name="maxzoomcheckbox2",state = false, caption = "Maximum zoom out (experimental)"})
-			checkboxmaxzoom1 = game.players[1].gui.top.factoriomaps.menu_ver1.menu3.maxzoomcheckbox1
+			checkboxmaxzoom1 = game.players[player_index].gui.left.factoriomaps.menu_ver1.menu3.maxzoomcheckbox1
 			checkboxmaxzoom2 = ui.menu_ver1.menu3.maxzoomcheckbox2
 
 			if(help) then
@@ -121,9 +121,9 @@ advanced = true
 		ui.menu_ver2.menu3a.add({type="checkbox", name="gridsizecheckbox1",state = (gridsizeindex==1 and "true" or "false"), caption = "256x256"})
 		ui.menu_ver2.menu3a.add({type="checkbox", name="gridsizecheckbox2",state = (gridsizeindex==2 and "true" or "false"), caption = "1024x1024"})
 		ui.menu_ver2.menu3a.add({type="checkbox", name="gridsizecheckbox3",state = (gridsizeindex==3 and "true" or "false"), caption = "2048x2048"})
-		radiogridsize1 = game.players[1].gui.top.factoriomaps.menu_ver2.menu3a.gridsizecheckbox1
-		radiogridsize2 = game.players[1].gui.top.factoriomaps.menu_ver2.menu3a.gridsizecheckbox2
-		radiogridsize3 = game.players[1].gui.top.factoriomaps.menu_ver2.menu3a.gridsizecheckbox3
+		radiogridsize1 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu3a.gridsizecheckbox1
+		radiogridsize2 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu3a.gridsizecheckbox2
+		radiogridsize3 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu3a.gridsizecheckbox3
 		if(help) then
 			ui.menu_ver2.add({type="label", name="help8", caption = "For some people 1024 was lagging, try 256. Use 2048 at own risk."})
 			ui.menu_ver2.help8.style.font_color = {r=1}
@@ -138,15 +138,15 @@ advanced = true
 			ui.menu_ver2.help9.style.font_color = {r=1}
 		end
 
-		radioextension1 = game.players[1].gui.top.factoriomaps.menu_ver2.menu4.extensioncheckbox1
-		radioextension2 = game.players[1].gui.top.factoriomaps.menu_ver2.menu4.extensioncheckbox2
-		radioextension3 = game.players[1].gui.top.factoriomaps.menu_ver2.menu4.extensioncheckbox3
+		radioextension1 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu4.extensioncheckbox1
+		radioextension2 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu4.extensioncheckbox2
+		radioextension3 = game.players[player_index].gui.left.factoriomaps.menu_ver2.menu4.extensioncheckbox3
 		
 		ui.menu_ver2.add({type="flow", name="menuplayerxy", direction = "horizontal"})
 		ui.menu_ver2.menuplayerxy.add({type="button", name="helpbutton", caption = "Help"})
 		ui.menu_ver2.menuplayerxy.add({type="label", name="playerxylabel", caption = "Player x/y:"})
 		ui.menu_ver2.menuplayerxy.add({type="label", name="playerxy", caption = "0,0"})
 	--end
-setvalues()
+setvalues(player_index)
 	
 end
