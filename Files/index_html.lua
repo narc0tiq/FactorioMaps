@@ -59,8 +59,11 @@ var CustomMapType = new CustomMapType();
 function update_url() {
     var center = map.getCenter();
     var zoom = map.getZoom();
+    var href = location.href;
 
-    window.location.hash = '#' + center.lat().toFixed(2) + ',' + center.lng().toFixed(2) + ',' + zoom;
+    href = href.split("#")[0] || href;
+    href = encodeURI(href);
+    window.location.replace(href + '#' + center.lat().toFixed(2) + ',' + center.lng().toFixed(2) + ',' + zoom);
 }
 
 function hash_changed() {
